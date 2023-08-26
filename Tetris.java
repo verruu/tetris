@@ -3,8 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 
 public class Tetris extends JPanel {
 
@@ -19,7 +18,7 @@ public class Tetris extends JPanel {
     private int numLinesRemoved = 0;
     private int curX = 0;
     private int curY = 0;
-    private Shape curPiece;
+    private transient Shape curPiece;
     private Shape.Tetrominoes[] board;
 
     public Tetris() {
@@ -219,7 +218,7 @@ public class Tetris extends JPanel {
             int keycode = e.getKeyCode();
 
             if (keycode == 'p' || keycode == 'P') {
-                pause();
+//                pause();
                 return;
             }
 
@@ -287,10 +286,13 @@ public class Tetris extends JPanel {
     }
 
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            var game = new Tetris();
-            game.setVisible(true);
-        });
+        JFrame frame = new JFrame();
+        frame.add(new Tetris());
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setTitle("Tetris");
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }
 
