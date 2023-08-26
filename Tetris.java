@@ -18,7 +18,7 @@ public class Tetris extends JPanel {
     private int numLinesRemoved = 0;
     private int currentPieceX = 0;
     private int currentPieceY = 0;
-    private Shape currentPiece;
+    private transient Shape currentPiece;
     private Shape.Tetrominoes[] board;
 
     public Tetris() {
