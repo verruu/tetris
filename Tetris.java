@@ -310,6 +310,17 @@ class Shape {
         setShape(Tetrominoes.NoShape);
     }
 
+    public void clear() {
+        for (int i = 0; i < 4; i++) {
+            setX(i, 0);
+            setY(i, 0);
+        }
+    }
+
+    public int[][] getCoordinates() {
+        return coordinates;
+    }
+
     public void setShape(Tetrominoes shape) {
         int[][][] coordsTable = {
                 {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
