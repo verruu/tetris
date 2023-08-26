@@ -46,8 +46,7 @@ public class Tetris extends JPanel {
         }
     }
 
-    private void drawSquare(Graphics g, int x, int y, Shape.Tetrominoes
-            shape) {
+    private void drawSquare(Graphics g, int x, int y, Shape.Tetrominoes shape) {
         Color colors[] = {new Color(0, 0, 0), new Color(204, 102, 102),
                 new Color(102, 204, 102), new Color(102, 102, 204),
                 new Color(204, 204, 102), new Color(204, 102, 204),
@@ -77,16 +76,13 @@ public class Tetris extends JPanel {
 
     private void doDrawing(Graphics g) {
         var size = getSize();
-        int boardTop = (int) size.getHeight() - BOARD_HEIGHT *
-                squareHeight();
+        int boardTop = (int) size.getHeight() - BOARD_HEIGHT * squareHeight();
 
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-                Shape.Tetrominoes shape = shapeAt(j, BOARD_HEIGHT - i -
-                        1);
+                Shape.Tetrominoes shape = shapeAt(j, BOARD_HEIGHT - i - 1);
                 if (shape != Shape.Tetrominoes.NoShape) {
-                    drawSquare(g, j * squareWidth(),
-                            boardTop + i * squareHeight(), shape);
+                    drawSquare(g, j * squareWidth(), boardTop + i * squareHeight(), shape);
                 }
             }
         }
@@ -95,9 +91,7 @@ public class Tetris extends JPanel {
             for (int i = 0; i < 4; i++) {
                 int x = curX + curPiece.x(i);
                 int y = curY - curPiece.y(i);
-                drawSquare(g, x * squareWidth(),
-                        boardTop + (BOARD_HEIGHT - y - 1) *
-                                squareHeight(),
+                drawSquare(g, x * squareWidth(), boardTop + (BOARD_HEIGHT - y - 1) * squareHeight(),
                         curPiece.getShape());
             }
         }
@@ -124,8 +118,7 @@ public class Tetris extends JPanel {
         for (int i = 0; i < 4; i++) {
             int x = curX + curPiece.x(i);
             int y = curY - curPiece.y(i);
-            board[(BOARD_HEIGHT - y - 1) * BOARD_WIDTH + x] =
-                    curPiece.getShape();
+            board[(BOARD_HEIGHT - y - 1) * BOARD_WIDTH + x] = curPiece.getShape();
         }
 
         removeFullLines();
@@ -181,21 +174,12 @@ public class Tetris extends JPanel {
         for (int i = 0; i < 4; i++) {
             int x = newX + newPiece.x(i);
             int y = newY - newPiece.y(i);
-            if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT)
+            if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT || shapeAt(x, y) != Shape.Tetrominoes.NoShape) {
                 return false;
+            }
         }
-        if (shapeAt(x, y) != Shape.Tetrominoes.NoShape) {
-            return false;
-        }
+        return true;
     }
-
-    curPiece =newPiece;
-    curX =newX;
-    curY =newY;
-
-    repaint();
-         return true;
-}
 
     private void rotate() {
         Shape newPiece = curPiece.rotateRight();
@@ -221,65 +205,62 @@ public class Tetris extends JPanel {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Helvetica", Font.BOLD, 24));
         FontMetrics fm = getFontMetrics(g.getFont());
-        g.drawString("Game Over", (getWidth() - fm.stringWidth("Game
-                Over")) / 2,
-                getHeight() / 2);
+        g.drawString("Game Over", (getWidth() - fm.stringWidth("Game Over")) / 2, getHeight() / 2);
     }
 
-private class TAdapter extends KeyAdapter {
+    private class TAdapter extends KeyAdapter {
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (!isStarted || curPiece.getShape() ==
-                Shape.Tetrominoes.NoShape) {
-            return;
-        }
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (!isStarted || curPiece.getShape() == Shape.Tetrominoes.NoShape) {
+                return;
+            }
 
-        int keycode = e.getKeyCode();
+            int keycode = e.getKeyCode();
 
-        if (keycode == 'p' || keycode == 'P') {
-            pause();
-            return;
-        }
+            if (keycode == 'p' || keycode == 'P') {
+                pause();
+                return;
+            }
 
-        if (isPaused) {
-            return;
-        }
+            if (isPaused) {
+                return;
+            }
 
-        switch (keycode) {
-            case KeyEvent.VK_LEFT:
-                tryMove(curPiece, curX - 1, curY);
-                break;
-            case KeyEvent.VK_RIGHT:
-                tryMove(curPiece, curX + 1, curY);
-                break;
-            case KeyEvent.VK_DOWN:
-                tryMove(curPiece.rotateRight(), curX, curY);
-                break;
-            case KeyEvent.VK_UP:
-                tryMove(curPiece.rotateLeft(), curX, curY);
-                break;
-            case KeyEvent.VK_SPACE:
-                dropDown();
-                break;
-            case 'd':
-                oneLineDown();
-                break;
-            case 'D':
-                oneLineDown();
-                break;
+            switch (keycode) {
+                case KeyEvent.VK_LEFT:
+                    tryMove(curPiece, curX - 1, curY);
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    tryMove(curPiece, curX + 1, curY);
+                    break;
+                case KeyEvent.VK_DOWN:
+                    tryMove(curPiece.rotateRight(), curX, curY);
+                    break;
+                case KeyEvent.VK_UP:
+                    tryMove(curPiece.rotateLeft(), curX, curY);
+                    break;
+                case KeyEvent.VK_SPACE:
+                    dropDown();
+                    break;
+                case 'd':
+                    oneLineDown();
+                    break;
+                case 'D':
+                    oneLineDown();
+                    break;
+            }
         }
     }
-}
 
-private class GameCycle implements ActionListener {
+    private class GameCycle implements ActionListener {
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        doGameCycle();
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            doGameCycle();
+        }
+
     }
-
-}
 
     private void doGameCycle() {
         update();
