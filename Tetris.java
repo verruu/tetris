@@ -7,18 +7,18 @@ import javax.swing.*;
 
 public class Tetris extends JPanel {
 
-    private final int BOARD_WIDTH = 10;
-    private final int BOARD_HEIGHT = 22;
-    private final int DELAY = 300;
+    private static final int BOARD_WIDTH = 10;
+    private static final int BOARD_HEIGHT = 22;
+    private static final int DELAY = 300;
 
     private Timer timer;
     private boolean isFallingFinished = false;
     private boolean isStarted = false;
     private boolean isPaused = false;
     private int numLinesRemoved = 0;
-    private int curX = 0;
-    private int curY = 0;
-    private transient Shape curPiece;
+    private int currentPieceX = 0;
+    private int currentPieceY = 0;
+    private Shape currentPiece;
     private Shape.Tetrominoes[] board;
 
     public Tetris() {
@@ -31,7 +31,7 @@ public class Tetris extends JPanel {
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(200, 400));
 
-        curPiece = new Shape();
+        currentPiece = new Shape();
         board = new Shape.Tetrominoes[BOARD_WIDTH * BOARD_HEIGHT];
         clearBoard();
 
@@ -86,20 +86,20 @@ public class Tetris extends JPanel {
             }
         }
 
-        if (curPiece.getShape() != Shape.Tetrominoes.NoShape) {
+        if (currentPiece.getShape() != Shape.Tetrominoes.NoShape) {
             for (int i = 0; i < 4; i++) {
-                int x = curX + curPiece.x(i);
-                int y = curY - curPiece.y(i);
+                int x = currentPieceX + currentPiece.x(i);
+                int y = currentPieceY - currentPiece.y(i);
                 drawSquare(g, x * squareWidth(), boardTop + (BOARD_HEIGHT - y - 1) * squareHeight(),
-                        curPiece.getShape());
+                        currentPiece.getShape());
             }
         }
     }
 
     private void dropDown() {
-        int newY = curY;
+        int newY = currentPieceY;
         while (newY > 0) {
-            if (!tryMove(curPiece, curX, newY - 1)) {
+            if (!tryMove(currentPiece, currentPieceX, newY - 1)) {
                 break;
             }
             newY--;
@@ -108,16 +108,16 @@ public class Tetris extends JPanel {
     }
 
     private void oneLineDown() {
-        if (!tryMove(curPiece, curX, curY - 1)) {
+        if (!tryMove(currentPiece, currentPieceX, currentPieceY - 1)) {
             pieceDropped();
         }
     }
 
     private void pieceDropped() {
         for (int i = 0; i < 4; i++) {
-            int x = curX + curPiece.x(i);
-            int y = curY - curPiece.y(i);
-            board[(BOARD_HEIGHT - y - 1) * BOARD_WIDTH + x] = curPiece.getShape();
+            int x = currentPieceX + currentPiece.x(i);
+            int y = currentPieceY - currentPiece.y(i);
+            board[(BOARD_HEIGHT - y - 1) * BOARD_WIDTH + x] = currentPiece.getShape();
         }
 
         removeFullLines();
@@ -153,17 +153,17 @@ public class Tetris extends JPanel {
         if (numFullLines > 0) {
             numLinesRemoved += numFullLines;
             isFallingFinished = true;
-            curPiece.setShape(Shape.Tetrominoes.NoShape);
+            currentPiece.setShape(Shape.Tetrominoes.NoShape);
         }
     }
 
     private void newPiece() {
-        curPiece.setRandomShape();
-        curX = BOARD_WIDTH / 2 + 1;
-        curY = BOARD_HEIGHT - 1 + curPiece.minY();
+        currentPiece.setRandomShape();
+        currentPieceX = BOARD_WIDTH / 2 + 1;
+        currentPieceY = BOARD_HEIGHT - 1 + currentPiece.minY();
 
-        if (!tryMove(curPiece, curX, curY)) {
-            curPiece.setShape(Shape.Tetrominoes.NoShape);
+        if (!tryMove(currentPiece, currentPieceX, currentPieceY)) {
+            currentPiece.setShape(Shape.Tetrominoes.NoShape);
             timer.stop();
             isStarted = false;
         }
@@ -181,9 +181,9 @@ public class Tetris extends JPanel {
     }
 
     private void rotate() {
-        Shape newPiece = curPiece.rotateRight();
-        if (tryMove(newPiece, curX, curY)) {
-            curPiece = newPiece;
+        Shape newPiece = currentPiece.rotateRight();
+        if (tryMove(newPiece, currentPieceX, currentPieceY)) {
+            currentPiece = newPiece;
         }
     }
 
@@ -211,7 +211,7 @@ public class Tetris extends JPanel {
 
         @Override
         public void keyPressed(KeyEvent e) {
-            if (!isStarted || curPiece.getShape() == Shape.Tetrominoes.NoShape) {
+            if (!isStarted || currentPiece.getShape() == Shape.Tetrominoes.NoShape) {
                 return;
             }
 
@@ -228,16 +228,16 @@ public class Tetris extends JPanel {
 
             switch (keycode) {
                 case KeyEvent.VK_LEFT:
-                    tryMove(curPiece, curX - 1, curY);
+                    tryMove(currentPiece, currentPieceX - 1, currentPieceY);
                     break;
                 case KeyEvent.VK_RIGHT:
-                    tryMove(curPiece, curX + 1, curY);
+                    tryMove(currentPiece, currentPieceX + 1, currentPieceY);
                     break;
                 case KeyEvent.VK_DOWN:
-                    tryMove(curPiece.rotateRight(), curX, curY);
+                    tryMove(currentPiece.rotateRight(), currentPieceX, currentPieceY);
                     break;
                 case KeyEvent.VK_UP:
-                    tryMove(curPiece.rotateLeft(), curX, curY);
+                    tryMove(currentPiece.rotateLeft(), currentPieceX, currentPieceY);
                     break;
                 case KeyEvent.VK_SPACE:
                     dropDown();
